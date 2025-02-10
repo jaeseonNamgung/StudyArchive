@@ -1,11 +1,13 @@
 # 설치 환경
-
-- CPU 2core 이상
-- 메모리 2GB 이상
-- 3대의 host 필요 (master node 1대, worker node 2대)
-- 우분투 24.04 LTS OS가 설치된 host 3대
-- Mac OS (M2)
-- UTM 가상머신
+- CPU: 2코어 이상
+- 메모리: 2GB 이상
+- 필요한 호스트: 총 3대
+  - 마스터 노드: 1대
+  - 워커 노드: 2대
+- 운영 체제: Ubuntu 24.04 LTS (각 호스트에 설치)
+- 가상화 환경:
+  - Mac OS (M2)
+  - UTM 가상 머신 활용
 
 # 도커 설치
 
@@ -44,17 +46,17 @@ sudo usermod -aG docker $USER
 ## 쿠버네티스 런타임 구성
 
 > Kubernetes v1.23.x와 v1.24.x 사이에는 큰 차이점이 존재한다. Kubernetes v1.24.0부터는 docker를 버렸다는 것이다. 공식 문서의 내용을 간단히 요약하면 다음과 같다.
-
-- 1.24 버전 이전에는 docker라는 specific한 CRI를 사용하고 있었다.
-- Kubernetes에서 docker 외에도 다양한 CRI를 지원하기 위해, CRI standard라는 것을 만들었다.
-- Docker는 CRI standard를 따르지 않고 있다.
-- Kubernetes는 docker 지원을 위해 dockershim이라는 코드를 만들어서 제공했다.
-- Kubernetes 개발 참여자들이 docker라는 특수 CRI를 위해 별도로 시간을 할애하는 것이 부담스럽다.
-- Kubernetes v1.24부터 dockershim 지원 안하기로 했다.
-
-쿠버네티스 공식 문서: https://kubernetes.io/ko/docs/setup/production-environment/container-runtimes/
-참고 블로그:
-> 
+>- 1.24 버전 이전에는 docker라는 specific한 CRI를 사용하고 있었다.
+>- Kubernetes에서 docker 외에도 다양한 CRI를 지원하기 위해, CRI standard라는 것을 만들었다.
+>- Docker는 CRI standard를 따르지 않고 있다.
+>- Kubernetes는 docker 지원을 위해 dockershim이라는 코드를 만들어서 제공했다.
+>- Kubernetes 개발 참여자들이 docker라는 특수 CRI를 위해 별도로 시간을 할애하는 것이 부담스럽다.
+>- Kubernetes v1.24부터 dockershim 지원 안하기로 했다.
+>
+>쿠버네티스 공식 문서: https://kubernetes.io/ko/docs/setup/production-environment/container-runtimes/
+>
+> 참고 블로그: https://littlemobs.com/blog/kubernetes-package-repository-deprecation/
+ 
 
 1. 메모리 스왑 비활성화
 
@@ -62,7 +64,7 @@ sudo usermod -aG docker $USER
 sudo swapoff -a && sudo sed -i '/swap/s/^/#/' /etc/fstab
 ```
 
-1. 방화벽 비활성화 [방화벽이 켜져있는 경우]
+2. 방화벽 비활성화 [방화벽이 켜져있는 경우]
 
 ```bash
 # firewalld 설치 필요 
@@ -72,7 +74,7 @@ sudo systemctl stop firewalld && sudo systemctl disable firewalld
 
 ```
 
-1. 노드 간 통신을 위한 iptables 설정
+3. 노드 간 통신을 위한 iptables 설정
 
 ```bash
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
@@ -94,7 +96,7 @@ EOF
 sudo sysctl --system
 ```
 
-1. Containerd 설정
+4. Containerd 설정
 
 ```bash
 sudo mkdir -p /etc/containerd
@@ -104,16 +106,16 @@ containerd config default | sudo tee /etc/containerd/config.toml
 - containerd config default: 기본 설정을 출력하는 명령어
 - `| sudo tee /etc/containerd/config.toml`: 해당 출력을 `/etc/containerd/config.toml` 파일에 저장
 - tee 명령어를 사용하면 출력을 파일에 저장하면서 동시에 화면에도 표시할 수 있다.
-1. Cgroup 설정 (systemd 사용)
+5. Cgroup 설정 (systemd 사용)
 
-> 리눅스에서, [control group](https://kubernetes.io/ko/docs/reference/glossary/?all=true#term-cgroup)은 프로세스에 할당된 리소스를 제한하는데 사용된다.
-[kubelet](https://kubernetes.io/ko/docs/reference/generated/kubelet)과 그에 연계된 컨테이너 런타임 모두 컨트롤 그룹(control group)들과 상호작용 해야 하는데, 이는 [파드 및 컨테이너 자원 관리](https://kubernetes.io/ko/docs/concepts/configuration/manage-resources-containers/)가 수정될 수 있도록 하고 cpu 혹은 메모리와 같은 자원의 요청(request)과 상한(limit)을 설정하기 위함이다. 컨트롤 그룹과 상호작용하기 위해서는, kubelet과 컨테이너 런타임이 *cgroup 드라이버*를 사용해야 한다. 매우 중요한 점은, kubelet과 컨테이너 런타임이 같은 cgroup group 드라이버를 사용해야 하며 구성도 동일해야 한다는 것이다.
-
-두 가지의 cgroup 드라이버가 이용 가능하다.
-- [`cgroupfs`](https://kubernetes.io/ko/docs/setup/production-environment/container-runtimes/#cgroupfs-cgroup-driver)
-- [`systemd`](https://kubernetes.io/ko/docs/setup/production-environment/container-runtimes/#systemd-cgroup-driver) 
-
-참고: 쿠버네티스 공식 문서
+> 리눅스에서, **control group**은 프로세스에 할당된 리소스를 제한하는데 사용된다.
+kubelet과 그에 연계된 컨테이너 런타임 모두 컨트롤 그룹(control group)들과 상호작용 해야 하는데, 이는 파드 및 컨테이너 자원 관리가 수정될 수 있도록 하고 cpu 혹은 메모리와 같은 자원의 요청(request)과 상한(limit)을 설정하기 위함이다. 컨트롤 그룹과 상호작용하기 위해서는, kubelet과 컨테이너 런타임이 cgroup 드라이버를 사용해야 한다. 매우 중요한 점은, kubelet과 컨테이너 런타임이 같은 cgroup group 드라이버를 사용해야 하며 구성도 동일해야 한다는 것이다.
+>
+> 두 가지의 cgroup 드라이버가 이용 가능하다.
+>- `cgroupfs`
+>- `systemd`
+>
+> 참고: https://kubernetes.io/ko/docs/setup/production-environment/container-runtimes/
 > 
 - `/etc/containerd/config.toml` 파일에서 SystemdCgroup을 true로 변경
 - 주의사항:
@@ -125,7 +127,7 @@ containerd config default | sudo tee /etc/containerd/config.toml
     SystemdCgroup = true
 ```
 
-1. Containerd 재시작
+6. Containerd 재시작
 
 ```bash
 sudo systemctl restart containerd
@@ -146,7 +148,7 @@ sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 ```
 
-1. Kubernetes 패키지 저장소 URL 추가
+2. Kubernetes 패키지 저장소 URL 추가
 
 ```
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -169,7 +171,7 @@ sudo kubeadm init --apiserver-advertise-address 192.168.64.20  --pod-network-cid
 - `—apiserver-advertise-address` : 마스터노드의 IP
 - `--pod-network-cidr=` : 설치하고자 하는 CRI의 IP주소 대역
     - Calico: 192.168.0.0/16
-1. kubectl 권한 설정
+2. kubectl 권한 설정
 
 ```bash
 
@@ -179,7 +181,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 ```
 
-1. Pod CNI 애드온 설치 (Calico)
+3. Pod CNI 애드온 설치 (Calico)
 
 ```bash
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.2/manifests/tigera-operator.yaml
@@ -255,7 +257,7 @@ error execution phase preflight: [preflight] Some fatal errors occurred:
 To see the stack trace of this error execute with --v=5 or higher
 ```
 
-root 권한이 아니라서 생기는 오류 `sudo` 를 사용하면 된다.
+root 권한이 아니라서 생기는 오류 `sudo` 명령어를 사용하면 된다.
 
 - `kubeadm init` 오류
 

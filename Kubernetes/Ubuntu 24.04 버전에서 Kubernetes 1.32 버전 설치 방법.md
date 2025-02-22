@@ -214,7 +214,7 @@ sudo kubeadm join 192.168.64.20:6443 --token 3s23ar.yhfowtvgyj88x5o7 \
 ### 워크 노드 추가 방법
 
 ```bash
-sudo kubeadm create token ----print-join-command
+sudo kubeadm token create --print-join-command
 ```
 
 - 토큰 생성 후 추가하려는 워커 노드에 `kubeadm join` 을 하면 된다.

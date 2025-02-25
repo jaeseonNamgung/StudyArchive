@@ -15,12 +15,12 @@ metadata:
   name: hostpath-pod
 spec:
   containers:
-    - name: my-container
-      image: busybox
-      args: [ "tail", "-f", "/dev/null" ]
-      volumeMounts:
-      - name: my-hostpath-volume
-        mountPath: /etc/data
+  - name: my-container
+    image: busybox
+    args: [ "tail", "-f", "/dev/null" ]
+    volumeMounts:
+    - name: my-hostpath-volume
+      mountPath: /etc/data
   volumes:
     - name: my-hostpath-volume
       hostPath:

@@ -83,12 +83,12 @@ spec:
       - name: nfs-server
         image: gcr.io/google_containers/volume-nfs:0.8
         ports:
-          - name: nfs
-            containerPort: 2049
-          - name: mountd
-            containerPort: 20048
-          - name: rpcbind
-            containerPort: 111
+        - name: nfs
+          containerPort: 2049
+        - name: mountd
+          containerPort: 20048
+        - name: rpcbind
+          containerPort: 111
         securityContext:
           privileged: true
 ```

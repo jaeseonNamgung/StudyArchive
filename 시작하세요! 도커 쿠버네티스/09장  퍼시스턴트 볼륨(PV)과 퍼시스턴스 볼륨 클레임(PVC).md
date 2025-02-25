@@ -42,7 +42,6 @@ spec:
     volumeMounts:
     - name: my-emptydir-volume
       mountPath: /data                      # 1. 이 컨테이너가 /data 에 파일을 생성하면
-
   - name: apache-webserver
     image: httpd:2
     volumeMounts:

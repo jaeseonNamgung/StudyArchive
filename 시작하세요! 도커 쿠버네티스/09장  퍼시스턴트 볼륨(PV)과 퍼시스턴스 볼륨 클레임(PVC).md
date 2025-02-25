@@ -195,12 +195,12 @@ metadata:
   name: ebs-mount-container
 spec:
   containers:
-    - name: ebs-mount-container
-      mage: busybox
-      args: [ "tail", "-f", "/dev/null" ]
-      volumeMounts:
-      - name: nfs-volume
-        mountPath: /mnt
+  - name: ebs-mount-container
+    image: busybox
+    args: [ "tail", "-f", "/dev/null" ]
+    volumeMounts:
+    - name: nfs-volume
+      mountPath: /mnt
   volumes:
   - name: ebs-volume
     persistentVolumeClaim:

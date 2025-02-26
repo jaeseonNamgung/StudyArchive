@@ -131,9 +131,9 @@ metadata:
   labels:
     rbac.authorization.k8s.io/aggregate-to-child-clusterrole: "true"
 rules: []
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

@@ -84,8 +84,8 @@ roleRef:
 ```yaml
 ...
 - apiGroups: [""]
-	resources: ["pod/exec"]
-	verbs: ["create"]
+  resources: ["pod/exec"]
+  verbs: ["create"]
 ...
 ```
 

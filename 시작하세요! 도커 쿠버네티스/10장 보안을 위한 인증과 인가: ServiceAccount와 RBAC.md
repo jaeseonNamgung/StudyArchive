@@ -238,7 +238,7 @@ imagePullSecrets:
 
 `kubeconfig` 파일은 일반적으로 `~/.kube/config` 경로에 있다.
 
-`kubectl` 명령어로 쿠버네티스의 기능을 사용하면 `kubectl`은 기본적으로 `kubeconfig`의 설정 정보에서 API 서버의 주소의 주소와 사용자 인증 정보를 로드한다.
+`kubectl` 명령어로 쿠버네티스의 기능을 사용하면 `kubectl`은 기본적으로 `kubeconfig`의 설정 정보에서 API 서버의 주소와 사용자 인증 정보를 로드한다.
 
 - `cluster`: `kubectl`이 사용할 쿠버네티스 API 서버의 접속 정보의 목록
 - `users`: 쿠버네티스의 API 서버에 접속하기 위한 사용자 인증 정보 목록
